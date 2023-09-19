@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorkUp</title>
+    <link rel="icon" href="/img/system-outline-67-clock.png" type="image/gif">
+    <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+
+    <div class="c-box">
+        <div class="pomodoro-timer pt-work">
+            <div class="p-timer__head">
+                <div class="p-timer__head-left">
+                    <div class="timer-head__setting">
+                        <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
+                        <lord-icon src="https://cdn.lordicon.com/dycatgju.json" trigger="hover" colors="primary:#fff"
+                            state="hover-2" style="width:40px;height:40px" title="Setting">
+                        </lord-icon>
+                    </div>
+                    <div id="fullscreen-button">
+                        <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
+                        <lord-icon src="https://cdn.lordicon.com/htujxsuy.json" trigger="hover" colors="primary:#fff"
+                            style="width:40px;height:40px" title="Full Screen">
+                        </lord-icon>
+                    </div>
+
+
+                </div>
+                <div class="timer-head__next-step">
+                    <div class="steps-to-long-break" title="Steps to LongRest"></div>
+                    <script src="https://cdn.lordicon.com/bhenfmcm.js"></script>
+                    <lord-icon src="https://cdn.lordicon.com/jxwksgwv.json" trigger="click" colors="primary:#fff"
+                        state="hover-1" style="width:50px;height: 50px" title="Next Step">
+                    </lord-icon>
+                </div>
+            </div>
+            <div class="p-timer"></div>
+            <div class="p-timer__buttons">
+                <button id="start-timer" title="start">
+                    СТАРТ
+                </button>
+                <button id="stop-timer" title="stop" disabled>
+                    СТОП
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="c-modal modal-closer hide">
+        <form action="" id="setting-form">
+            <div class="s-modal__head">
+                <div class="s-modal__head__title">НАСТРОЙКИ</div>
+            </div>
+            <div class="s-modal__body">
+                <div class="sm-body__part">
+                    <div class="smb-part__title smb-part__title-mode">Готовые варианты:</div>
+                    <div class="smb-options-mode">
+                    </div>
+                </div>
+                <div class="sm-body__part">
+                    <div class="smb-part__title">
+                        <label for="time-focus">Время спринта:</label>
+                    </div>
+                    <div class="smb-part__input">
+                        <input type="number" id="time-focus">
+                        <span class="smbp-input__desc">в минутах</span>
+                    </div>
+                </div>
+                <div class="sm-body__part">
+                    <div class="smb-part__title">
+                        <label for="time-shortBreak">Время короткого перерыва:</label>
+                    </div>
+                    <div class="smb-part__input">
+                        <input type="number" id="time-shortBreak">
+                        <span class="smbp-input__desc">в минутах</span>
+                    </div>
+                </div>
+                <div class="sm-body__part">
+                    <div class="smb-part__title">
+                        <label for="time-longBreak">Время длинного перерыва:</label>
+                    </div>
+                    <div class="smb-part__input">
+                        <input type="number" id="time-longBreak">
+                        <span class="smbp-input__desc">в минутах</span>
+                    </div>
+                </div>
+
+                <div class="sm-body__part">
+                    <div class="smb-part__title">
+                        <label for="period-longBreak">Периодичность длинного перерыва:</label>
+                    </div>
+                    <div class="smb-part__input">
+                        <input type="number" id="period-longBreak">
+                        <span class="smbp-input__desc">в спринтах</span>
+                    </div>
+                </div>
+            </div>
+            <div class="s-modal__footer">
+                <button class="modal-closer">ЗАКРЫТЬ</button>
+            </div>
+        </form>
+    </div>
+
+
+    <script src="./js-code/main.js" type="module"></script>
+</body>
+
+</html>
+
+
+
+
+
+
+
+<!-- <a href="https://lordicon.com/">Icons by Lordicon.com</a> -->
