@@ -53,10 +53,7 @@ document.querySelector('.p-timer__head').addEventListener('click', (ev) => {
             document.exitFullscreen();
         }
         console.log(tit);
-    } else if (tit === 'Next Step') {
-        console.log(tit);
     }
-
 })
 
 // взаимодействие с кнопками старт и стоп
@@ -72,7 +69,7 @@ function main() {
     }
 
     writeMode(modeOptional.classic);
-    writeTime([modeOptional.classic[0], '0']);
+    writeTime([modeOptional.classic[0], 60]);
     showTimer(modeOptional.classic[0]);
     showStepsForRest(modeOptional.classic[3])
 
@@ -150,7 +147,7 @@ function getInputValue(listInputs) {
         curMode[i] = inputsListArray[i][1].value;
     }
     writeMode(curMode);
-    writeTime([curMode[0], '0']);
+    writeTime([curMode[0], 60]);
     showStepsForRest(curMode[3]);
     showTimer(curMode[0]);
 }
@@ -177,24 +174,26 @@ function showTimer(minutes, seconds = '0', place = clockFace) {
 
 let stateTimer;
 let stateMode = 'work';
+const tim = document.querySelector('.pomodoro-timer');
+const audio = new Audio('../audio/new_message_notice.mp3')
 
 document.querySelector('.p-timer__buttons').addEventListener('click', (ev) => {
     const start = document.querySelector('#start-timer'),
         stop = document.querySelector('#stop-timer');
 
     const curMode = readMode();
-    let curStep = curMode[3];
 
     if (stateMode === 'work') {
+
         if (ev.target == start) {
             if (start.title === 'start') {
-                stateTimer = timerLogic()
+                stateTimer = timerLogic();
                 stop.disabled = false;
                 start.textContent = 'ПАУЗА';
                 start.title = 'pause';
             } else if (start.title === 'pause') {
                 clearInterval(stateTimer);
-                let timeArray = clockFace.textContent.split(':')
+                let timeArray = clockFace.textContent.split(':');
                 writeTime(timeArray);
                 start.textContent = 'ПРОДОЛЖИТЬ';
                 start.title = 'continue';
@@ -210,12 +209,74 @@ document.querySelector('.p-timer__buttons').addEventListener('click', (ev) => {
             }
         }
 
-        if (ev.target == stop && stop.title === 'stop') {
-            clearInterval(stateTimer);
-            showTimer(curMode[0]);
+        if (ev.target == stop) {
+            if (stop.title === 'stop') {
+                clearInterval(stateTimer);
+                showTimer(curMode[0]);
 
-            start.textContent = 'СТАРТ';
-            start.title = 'start';
+                start.textContent = 'СТАРТ';
+                start.title = 'start';
+            }
+            if (stop.title === 'done') {
+                curMode[3] = curMode[3] - 1;
+                writeMode(curMode);
+                showStepsForRest(curMode[3])
+                stateMode = 'break';
+                start.textContent = 'ПАУЗА';
+                start.title = 'pause';
+
+                stop.textContent = 'ПРОПУСТИТЬ';
+                stop.title = 'next';
+                showTimer(curMode[1]);
+                if (curMode[3] < 1) {
+                    writeTime([curMode[2], 60]);
+                } else {
+                    writeTime([curMode[1], 60]);
+                }
+
+                audio.play()
+                tim.classList.add('pt-break');
+                stateTimer = timerLogic();
+            }
+
+        }
+    } else if (stateMode === 'break') {
+        if (ev.target == start) {
+            if (start.title === 'start') {
+                stateTimer = timerLogic()
+                start.textContent = 'ПАУЗА';
+                start.title = 'pause';
+            } else if (start.title === 'pause') {
+                clearInterval(stateTimer);
+                let timeArray = clockFace.textContent.split(':')
+                writeTime(timeArray);
+                start.textContent = 'ПРОДОЛЖИТЬ';
+                start.title = 'continue';
+            } else if (start.title === 'continue') {
+                start.textContent = 'ПАУЗА';
+                start.title = 'pause';
+                stateTimer = timerLogic();
+            }
+        }
+
+        if (ev.target == stop) {
+            if (stop.title === 'next') {
+                clearInterval(stateTimer);
+                showTimer(curMode[0]);
+                writeTime([curMode[0], 60])
+                stateMode = 'work';
+
+                start.textContent = 'СТАРТ';
+                start.title = 'start';
+
+                stop.textContent = 'СТОП';
+                stop.title = 'stop';
+                stop.disabled = true;
+                audio.play();
+                tim.classList.remove('pt-break');
+                showStepsForRest(curMode[3]);
+            }
+
         }
     }
 
@@ -224,14 +285,18 @@ document.querySelector('.p-timer__buttons').addEventListener('click', (ev) => {
 })
 
 function timerLogic() {
+    const startHolder = document.querySelector('#start-timer'),
+        stopHolder = document.querySelector('#stop-timer');
     let curMode = readMode();
     let curTime = readTime();
-
     if (stateMode === 'work') {
-        let minutes = Number.parseInt(curTime[0]) == Number.parseInt(curMode[0]) ? Number.parseInt(curMode[0]) : Number.parseInt(curTime[0]) + 1,
-            seconds = Number.parseInt(curTime[1]) == 0 ? 60 : Number.parseInt(curTime[1]);
-        seconds--
-        minutes--
+        let minutes = Number.parseInt(curTime[0]),
+            seconds = Number.parseInt(curTime[1]);
+        if (seconds === 60) {
+            seconds--
+            minutes--
+        }
+
         showTimer(minutes, seconds);
 
         const mainLoop = setInterval(() => {
@@ -251,18 +316,68 @@ function timerLogic() {
                 writeMode(curMode);
                 showStepsForRest(curMode[3])
                 stateMode = 'break';
+                if (curMode[3] < 1) {
+                    writeTime([curMode[2], 60]);
+                } else {
+                    writeTime([curMode[1], 60]);
+                }
+                audio.play();
+                tim.classList.add('pt-break');
+                stateTimer = timerLogic();
+
+                stopHolder.textContent = 'ПРОПУСТИТЬ';
+                stopHolder.title = 'next';
             }
 
-        }, 100)
+        }, 1000)
 
         return mainLoop;
     } else if (stateMode === 'break') {
-        let minutes = Number.parseInt(curTime[0]) == Number.parseInt(curMode[0]) ? Number.parseInt(curMode[0]) : Number.parseInt(curTime[0]) + 1,
-            seconds = Number.parseInt(curTime[1]) == 0 ? 60 : Number.parseInt(curTime[1]);
-        seconds--
-        minutes--
+        if (curMode[3] < 1) {
+            showStepsForRest('СДЕЛАЙТЕ ДЛИННЫЙ ПЕРЕРЫВ');
+        } else {
+            showStepsForRest('СДЕЛАЙТЕ КОРОТКИЙ ПЕРЕРЫВ');
+        }
+        let minutes = Number.parseInt(curTime[0]),
+            seconds = Number.parseInt(curTime[1]);
+        if (seconds === 60) {
+            seconds--
+            minutes--
+        }
         showTimer(minutes, seconds);
 
+        const mainLoop = setInterval(() => {
+            seconds--
+
+            if (seconds < 0) {
+                seconds = 59;
+                minutes--;
+            }
+
+
+            showTimer(minutes, seconds);
+
+            if (minutes <= 0 && seconds <= 0) {
+                clearInterval(mainLoop);
+                stateMode = 'work';
+                audio.play();
+                writeTime([curMode[0], 60]);
+                showTimer(curMode[0])
+                tim.classList.remove('pt-break');
+
+                stopHolder.textContent = 'СТОП';
+                stopHolder.title = 'stop';
+                stopHolder.disabled = true;
+
+                startHolder.textContent = 'СТАРТ';
+                startHolder.title = 'start';
+                showStepsForRest(curMode[3]);
+
+            }
+
+        }, 1000)
+
+        return mainLoop;
     }
 
 }
